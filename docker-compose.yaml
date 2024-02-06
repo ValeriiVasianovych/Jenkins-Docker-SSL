@@ -1,0 +1,25 @@
+version: '3'
+services:
+   nginx:
+      container_name: reverse-proxy
+      build:
+         context: ./reverse-proxy
+         dockerfile: Dockerfile
+      ports:
+         - '80:80'
+         - '443:443'
+         - '2222:22'
+      volumes:
+          - /home/user/jenkins_compose/jenkins_configuration:/var/jenkins_home
+          - /var/run/docker.sock:/var/run/docker.sock
+
+   jenkins:
+      image: jenkins/jenkins:lts
+      privileged: true
+      user: root
+      ports:
+         - '8080:8080'
+      container_name: jenkins
+      volumes:
+         - /home/user/jenkins_compose/jenkins_configuration:/var/jenkins_home
+         - /var/run/docker.sock:/var/run/docker.sock

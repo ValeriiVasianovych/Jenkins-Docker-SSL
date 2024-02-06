@@ -1,0 +1,63 @@
+- name: Install Docker Engine on Ubuntu and run docker-compose
+  hosts: group2
+  become: yes
+
+  vars:
+     packages:
+        - curl
+        - gnupg-agent
+        - lsb-release
+        - neovim
+        - htop
+        - git
+        - apt-transport-https
+        - ca-certificates
+        - software-properties-common
+
+  tasks:
+     - name: Update apt repositories
+       apt:
+          update_cache: yes
+
+     - name: Upgrade all packages
+       apt:
+          upgrade: dist
+
+     - name: Install required packages
+       apt:
+          name: '{{ packages }}'
+          state: present
+
+     - name: Add Docker's GPG key
+       apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg
+          state: present
+
+     - name: Add Docker repository to apt sources
+       apt_repository:
+          repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+          state: present
+
+     - name: Update apt repositories
+       apt:
+          update_cache: yes
+
+     - name: Install Docker packages
+       apt:
+          name:
+             - docker-ce
+             - docker-ce-cli
+             - containerd.io
+             - docker-buildx-plugin
+             - docker-compose-plugin
+          state: present
+
+     - name: Copy this directory to the remote machine
+       synchronize:
+          src: '{{ playbook_dir }}'
+          dest: /home/user/
+
+     - name: Run docker-compose
+       command: docker-compose up -d
+       args:
+          chdir: /home/user/jenkins-inside-docker-https/
