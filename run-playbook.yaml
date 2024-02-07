@@ -55,9 +55,12 @@
      - name: Copy this directory to the remote machine
        synchronize:
           src: '{{ playbook_dir }}'
-          dest: /home/user/
+          dest: /home/YOUR USERNAME/
 
      - name: Run docker-compose
        command: docker-compose up -d
        args:
-          chdir: /home/user/jenkins-inside-docker-https/
+          chdir: /home/YOUR_USERNAME/jenkins-inside-docker-https/
+
+     - name: Get letsencrypt certificate for jenkins/jenkins:lts image
+       command: docker exec -it jenkins /bin/bash -c "certbot --nginx --non-interactive --agree-tos --email YOUR_EMAIL@ --domains YOUR_DOMAIN --domains www.YOUR_DOMAIN"
